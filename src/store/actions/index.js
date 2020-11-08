@@ -165,10 +165,10 @@ export const deleteFlight = (flightObj,history) => dispatch => {
         .catch(err => dispatch({ type: ERROR, payload: err.response }))
 }
 
-export const getAiportByCoords = (position) => dispatch => {
-    dispatch({ type: START })
+export const getAirportByCoords = ({latitude,longitude}) => dispatch => {
+    dispatch({ type: START });
     axios
-        .get(`https://${process.env.REACT_APP_RAPID_API_}/airports/search/location/${position.latitude}/${position.longitude}/mi/50/16`, {	"headers": {
+        .get(`https://${process.env.REACT_APP_RAPID_API_}/airports/search/location/${latitude}/${longitude}/mi/50/16`, {	"headers": {
             "x-rapidapi-host": `${process.env.REACT_APP_RAPID_API_}`,
             "x-rapidapi-key": `${process.env.REACT_APP_RAPIDAPI_KEY}`
         }})

@@ -7,8 +7,9 @@ import NearestAirport from '../Trips/NearestAirport'
 export default function Dashboard(props) {
     return (
 
-        <>
-            <NearestAirport />
+        <><p>this shows
+        <NearestAirport />
+        </p>
             <TravelerView />
             <KidsConnexView />
             <AdminView />

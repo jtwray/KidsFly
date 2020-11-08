@@ -35,16 +35,19 @@ const NearestAirport = props => {
         //returns the browser coordinates for the airport by distance api as object position{}
      }
      browserCoordsII();
+useEffect(()=>{
 
 
-
-     const getAiportByCoords = (position) =>  {
-       
-        axios
-            .get(`https://aerodatabox.p.rapidapi.com/airports/search/location/${position.latitude}/${position.longitude}/mi/50/16`)
-            .then(res =>setAirport(res.data))
-            .catch(err => console.error( err.response))
+},[])
     
+    
+    const getAiportByCoords = (position) =>  {
+        
+        axios
+        .get(`https://aerodatabox.p.rapidapi.com/airports/search/location/${position.latitude}/${position.longitude}/mi/50/16`)
+        .then(res =>setAirport(res.data))
+        .catch(err => console.error( err.response))
+        
     }
 // position&&answer()
 //     const answer = async () => {

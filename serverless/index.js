@@ -20,7 +20,7 @@ api.handler= async(event)=>{
         response.body=JSON.stringify(e);
         response.statusCode=500;
     }
-// log final form of respopnse to cloudwatch and return to client
+// log final form of response to cloudwatch and return to client
         console.log(
             "1",{response},
             "2","response",
