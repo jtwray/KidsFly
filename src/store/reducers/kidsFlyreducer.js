@@ -36,12 +36,9 @@ const initialState = {
 const kidsFlyreducer = (state = initialState, action) => {
   switch (action.type) {
     case "START": {
-      console.log("case:'START' in reducer fired");
-
       return { ...state, isLoading: true };
     }
     case "ERROR": {
-      console.error("payload.response", action.payload);
       return {
         ...state,
         isLoading: false,
@@ -60,7 +57,6 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "ADD_FLIGHT_SUCCESS": {
-      console.log("action.payload.flightObj", action.payload.flightObj);
       return {
         ...state,
         isLoading: false,
@@ -89,7 +85,6 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "GETALLTRIPS_SUCCESS": {
-      console.log("****theflightslist", action.payload);
       return {
         ...state,
         isLoading: false,
@@ -97,8 +92,11 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "GETAIRPORTBYCOORDS_SUCCESS": {
-        const{payload}=action;
-        console.log({payload},"line 101 reducer case getairportbycoords_success")
+      const { payload } = action;
+      console.log(
+        { payload },
+        "line 101 reducer case getairportbycoords_success"
+      );
       return {
         ...state,
         isLoading: false,
@@ -106,7 +104,6 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "LOGIN_USER_SUCCESS": {
-      console.log("action.payload", action.payload);
       window.localStorage.setItem("token", action.payload.token);
       return {
         ...state,
@@ -117,7 +114,6 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "LOGOUT": {
-      console.log("action.payload", action.payload);
       window.localStorage.removeItem(`token`);
 
       return {
