@@ -16,6 +16,55 @@ import {
 import { Redirect } from "react-router-dom";
 
 const initialState = {
+  airportresponse: {
+    results: {
+      items: [
+        {
+          position: [35.43649, -82.53852],
+          distance: 8149,
+          title: "Asheville Regional Airport (AVL)",
+          averageRating: 0.0,
+          category: {
+            id: "airport",
+            title: "Airport",
+            href:
+              "https://places.ls.hereapi.com/places/v1/categories/places/airport?app_id=VzrNf0MKt1DkL6ELrV80&app_code=WmPKu38ynahhapyXrHr4QQ",
+            type: "urn:nlp-types:category",
+            system: "places",
+          },
+          icon:
+            "https://download.vcdn.data.here.com/p/d/places2/icons/categories/40.icon",
+          vicinity: "61 Terminal Dr<br/>Asheville, NC 28732",
+          having: [],
+          type: "urn:nlp-types:place",
+          href:
+            "https://places.ls.hereapi.com/places/v1/places/840dnm39-3f077280f9d14447926ce4a4a3b90812;context=Zmxvdy1pZD1kODU2NmU4Ny1iNTFlLTVkNDYtOGQwMi03YzQ1N2M4NzA1MTVfMTYwNDg2NTQyNTYxOV8wXzU2ODAmcmFuaz0w?app_id=VzrNf0MKt1DkL6ELrV80&app_code=WmPKu38ynahhapyXrHr4QQ",
+          id: "840dnm39-3f077280f9d14447926ce4a4a3b90812",
+        },
+      ],
+    },
+    search: {
+      context: {
+        location: {
+          position: [35.508689, -82.523053],
+          address: {
+            text: "12 Foxfire Dr<br/>Asheville, NC 28803<br/>USA",
+            house: "12",
+            street: "Foxfire Dr",
+            postalCode: "28803",
+            city: "Asheville",
+            county: "Buncombe",
+            stateCode: "NC",
+            country: "United States",
+            countryCode: "USA",
+          },
+        },
+        type: "urn:nlp-types:place",
+        href:
+          "https://places.ls.hereapi.com/places/v1/places/loc-dmVyc2lvbj0xO3RpdGxlPTEyK0ZveGZpcmUrRHI7bGF0PTM1LjUwODY4OTM7bG9uPS04Mi41MjMwNTMxO3N0cmVldD1Gb3hmaXJlK0RyO2hvdXNlPTEyO2NpdHk9QXNoZXZpbGxlO3Bvc3RhbENvZGU9Mjg4MDM7Y291bnRyeT1VU0E7c3RhdGVDb2RlPU5DO2NvdW50eT1CdW5jb21iZTtjYXRlZ29yeUlkPWJ1aWxkaW5nO3NvdXJjZVN5c3RlbT1pbnRlcm5hbA;context=c2VhcmNoQ29udGV4dD0x?app_id=VzrNf0MKt1DkL6ELrV80&app_code=WmPKu38ynahhapyXrHr4QQ",
+      },
+    },
+  },
   currentUser: "",
   isLoading: false,
   isAdmin: false,
@@ -28,7 +77,7 @@ const initialState = {
   incomingTravelersList: [],
   arrivedTravelersList: [],
   homeAirport: "",
-  closestAirport: "",
+  nearestAirport: "",
   upcomingFlightsList: [],
   kidsConnectionStaffList: [],
 };
@@ -92,16 +141,26 @@ const kidsFlyreducer = (state = initialState, action) => {
       };
     }
     case "GETAIRPORTBYCOORDS_SUCCESS": {
-      const { payload } = action;
-      console.log(
-        { payload },
-        "line 101 reducer case getairportbycoords_success"
-      );
+      let {
+        position,
+        distance,
+        title,
+        icon,
+        vicinity,
+      } = action.payload.results.items[0];
+      const airportPacket = { ...position, distance, title, icon, vicinity };
       return {
         ...state,
         isLoading: false,
-        closestAirport: [action.payload],
+        closestAirport: airportPacket,
       };
+    }
+    case "GETAIRPORTBYCOORDS_SUCCESS_NOLOCAL": {
+      if (action.payload.results.length == 0)
+        return {
+          ...state,
+          isLoading: false,
+        };
     }
     case "LOGIN_USER_SUCCESS": {
       window.localStorage.setItem("token", action.payload.token);
