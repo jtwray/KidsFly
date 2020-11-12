@@ -1,86 +1,83 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
 import { connect } from "react-redux";
-import { bindActionCreators } from "redux"
-import { getAiportByCoords } from "../../store/actions";
-import { Redirect } from "react-router-dom"
-import axios from 'axios'
+import { getAirportByCoords } from "../../store/actions";
+import { Redirect } from "react-router-dom";
+import axios from "axios";
 import { axiosWithAuth } from "../../utils";
+import "./NearestAirport.css";
 
-const NearestAirport = props => {
+let tooltip, tooltiptext;
+tooltip = {
+  position: ` relative`,
+  display: `inline-block`,
+  borderBottom: ` 1px dotted black`,
+  "&:hover .tooltiptext": { visibility: "visible" },
+  /* If you want dots under the hoverable text */
+};
 
-    const initialAirport = { name: "", distance: "" };
-    const [airport, setAirport] = useState({ initialAirport });
-    const [position, setPosition] = useState();
+/* Tooltip text */
+// .tooltip
+tooltiptext = {
+  visibility: `hidden`,
+  width: `120px`,
+  backgroundColor: `black`,
+  color: `#fff`,
+  textAlign: `center`,
+  padding: `5px 0`,
+  borderRadius: `6px`,
 
-    const success = (pos) => {
-        const { latitude, longitude, accuracy } = pos.coords;
-        console.log('Your current position is:');
-        console.log(`Latitude : ${latitude}`);
-        console.log(`Longitude: ${longitude}`);
-        console.log(`More or less ${accuracy} meters.`);
+  /* Position the tooltip text - see examples below! */
+  position: `absolute`,
+  zIndex: 1,
+};
 
-        setPosition({ latitude: latitude, longitude: longitude, accuracy: accuracy })
-        return (console.log("position", position))
+/* Show the tooltip text when you mouse over the tooltip container */
+
+const NearestAirport = ({gps,nearestAirport}) => {
+
+  
+  let {latitude,longitude}=gps;
+  const initialAirport = { name: "", distance: "" };
+  const [airport, setAirport] = useState({ initialAirport });
+console.log({latitude},{longitude})
+  useEffect(() => {
+    if (latitude!=undefined) {console.log({latitude},{longitude});
+      getAirportByCoords(latitude, longitude);
+
     }
+  }, [ latitude]);
 
-    const error = (err) => {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-    }
-    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+  if (!nearestAirport) {
+    return <div>gps disabled</div>;
+  }
+  if (nearestAirport) {
+    let { position, distance, title, icon, vicinity } =  nearestAirport;
 
-
-
-    const browserCoordsII = () => {
-        navigator.geolocation.getCurrentPosition(success, error, options);
-        //returns the browser coordinates for the airport by distance api as object position{}
-     }
-     browserCoordsII();
-useEffect(()=>{
-
-
-},[])
-    
-    
-    const getAiportByCoords = (position) =>  {
-        
-        axios
-        .get(`https://aerodatabox.p.rapidapi.com/airports/search/location/${position.latitude}/${position.longitude}/mi/50/16`)
-        .then(res =>setAirport(res.data))
-        .catch(err => console.error( err.response))
-        
-    }
-// position&&answer()
-//     const answer = async () => {
-//         // const position = await browserCoordsII()
-//         const airport = await getnearestAirport(position)
-//         setAirport(airport)
-//         console.log("airport", airport)
-
-//     }
- 
-//     const getnearestAirport = (position) => {
-//         const { latitude, longitude } = position;
-//         const getAirportByCoords = (latitude, longitude) => {
-//             (localStorage.getItem("token")) ?
-//                 (axios
-//                     .get(`https://aerodatabox.p.rapidapi.com/airports/search/location/${longitude}/${latitude}/km/100/16`)
-//                     .then(res => console.log(res))
-//                     .catch(err => console.error(err))) : (Redirect("/login"))
-//         };
-//         return getAirportByCoords(latitude, longitude);
-//     };
     return (
-        <>
-            <div>nearest Airport{airport[0]}</div>
-        </>
-
+      <div>
+        <div>
+          <h2>
+            nearest Airport{title} is {distance} meters from your current
+            location
+            <div class="tooltip">
+              Hover over me
+              <span class="tooltiptext">{position}Tooltip text</span>
+            </div>
+          </h2>
+          <address>
+            {title}
+            <br />
+            {vicinity}
+          </address>
+          <img src={icon} alt={title} />
+        </div>
+      </div>
     );
-};
-const mapStateToProps = state => {
-    return { nearestAirport: state.neartestAirport };
+  }
 };
 
-const mapDispatchToProps = dispatch => {
-    return { dispatch, ...bindActionCreators({}, dispatch) }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(NearestAirport);
+const mapStateToProps = (state) => {
+  return { nearestAirport: state.closestAirport };
+};
+
+export default connect(mapStateToProps, { getAirportByCoords })(NearestAirport);
