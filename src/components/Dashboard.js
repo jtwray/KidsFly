@@ -14,30 +14,53 @@ import axios from "axios";
 import { axiosWithAuth } from "../utils/axiosWithAuth";
 import NearestAirport from "./Trips/NearestAirport";
 
-const Dash = ({ message, dispatch, upcomingFlightsList }) => {
+const Dash = ({
+  message,
+  upcomingFlightsList,
+  getAirportByCoords,
+  fetchTrips,
+  addFlight,
+  editFlight,
+}) => {
   const history = useHistory();
-  const [latitude, longitude] = usePosition();
 
   const initialAirport = { name: "", distance: "" };
+  const [latitude, longitude, accuracy] = usePosition();
+  const [gps, setGps] = useState(latitude, longitude, accuracy);
+
   const [airport, setAirport] = useState({ initialAirport });
 
+  console.log(
+    "AFTERcustomhook",
+    "latitude,longitude,accuracy",
+    latitude,
+    longitude,
+    accuracy,
+    { gps }
+  );
+
   useEffect(() => {
-    dispatch(fetchTrips());
+    fetchTrips();
   }, []);
+
+  useEffect(() => {
+    setGps({ latitude, longitude, accuracy });
+  }, [latitude, longitude, accuracy]);
 
   return (
     <div className="dashContainer">
       <div className="dashHeader">
         <h2>{message}</h2>
+
         <p>Below you will find any trips that you have coming up</p>
       </div>
       <div className="tripContainer">
         <h3>Trips</h3>
-        <NearestAirport getairport={dispatch(getAirportByCoords({latitude,longitude}))} />
-        <button onClick={() => dispatch(getAirportByCoords(position))}>
+        {gps != undefined && <NearestAirport gps={gps} />}
+        <button onClick={() => getAirportByCoords(latitude, longitude)}>
           getairport
         </button>
-        <button onClick={() => dispatch(fetchTrips())}>gettrips</button>
+        <button onClick={() => fetchTrips()}>gettrips</button>
         <MyTrips upcomingFlightsList={upcomingFlightsList} history={history} />
         <TripForm />
       </div>
@@ -52,4 +75,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Dash);
+export default connect(mapStateToProps, {
+  getAirportByCoords,
+  fetchTrips,
+  addFlight,
+  editFlight,
+})(Dash);
